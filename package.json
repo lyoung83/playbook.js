@@ -1,0 +1,27 @@
+{
+  "name": "playbook",
+  "version": "0.2.0",
+  "description": "An American Football play designer written in JavaScript.",
+  "main": "playbook.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lyoung83/playbook.js.git"
+  },
+  "keywords": [
+    "AmericanFootball",
+    "Play",
+    "Designer"
+  ],
+  "author": "Nathan Davison",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/lyoung83/playbook.js/issues"
+  },
+  "homepage": "https://github.com/lyoung83/playbook.js#readme",
+  "dependencies": {
+    "raphael": "^2.2.7"
+  }
+}

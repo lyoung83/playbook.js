@@ -19,15 +19,15 @@
         factory(Raphael, root);
     }
 }(this, function(Raphael, exports) {
-        
+
     /**
      * Playbook is the function whose prototype builds the main object.
-     * 
+     *
      * @param {Object} options
      * @returns void
      */
     function Playbook(options) {
-    
+
         // options
         options = options || {};
         this.options = {};
@@ -51,7 +51,7 @@
         };
         this.mode = options.mode || 'move';
     };
-    
+
     /**
      * Builds the field and player elements.
      *
@@ -65,16 +65,16 @@
         RaphaelPathDrag(Raphael, this);
         RaphaelPathFirstSegment(Raphael);
         RaphaelMovePathStart(Raphael);
-        
+
         // build the field.
         PlaybookBuildField(this);
-        
+
         // build the players.
         PlaybookBuildPlayers(this);
-        
+
         return this;
     };
-    
+
     /**
      * Exports the current player and route configuration to JSON.
      *
@@ -91,7 +91,7 @@
             playerData = {};
         playerData.offense = [];
         playerData.defense = [];
-            
+
         this.players.forEach(function(player) {
             xpos = player.attr('cx');
             ypos = player.attr('cy');
@@ -113,7 +113,7 @@
                 zone = '';
             }
             side = player.data('side');
-            
+
             playerData[side].push({
                 cx: xpos,
                 cy: ypos,
@@ -122,14 +122,14 @@
                 zone: zone
             });
         });
-        
+
         return playerData;
     };
-    
+
     /**
      * Imports a play into the field.
      *
-     * @param {Object} playerData 
+     * @param {Object} playerData
      * @returns void
      */
     Playbook.prototype.importPlay = function(playerData) {
@@ -161,7 +161,7 @@
                     }
                 }
             };
-            
+
             // import offensive players
             if (playerData.offense.length > 0) {
                 importPlayers('offense', this);
@@ -172,7 +172,7 @@
             }
         }
     };
-    
+
     /**
      * Brings all the player elements to the front.
      *
@@ -184,7 +184,7 @@
         });
         return this;
     };
-    
+
     /**
      * Changes the active "mode".
      *
@@ -195,7 +195,7 @@
         this.mode = mode;
         return this;
     };
-    
+
     /**
      * Builds the field elements.
      *
@@ -205,7 +205,7 @@
     function PlaybookBuildField(playbook) {
         // the Raphael paper
         playbook.paper = Raphael(playbook.options.element, playbook.options.fieldWidth, playbook.options.fieldHeight);
-        
+
         // the alternating-tone green field
         var turf = playbook.paper.set();
         for (var i = 0; i <= playbook.options.fieldWidth; i = i + playbook.options.yardLineGap) {
@@ -224,42 +224,42 @@
                 .attr('stroke-width', 0)
             );
         }
-        
+
         // the yard markers
         var yardMarks = playbook.paper.set();
         var yardLines = playbook.paper.set();
         var yardDashes = playbook.paper.set();
-        
+
         // the "10 yard" lines
         for (var i = 0; i < playbook.options.fieldHeight; i = i + playbook.options.yardLineGap) {
             var yardLineYOffset = (i - (playbook.options.yardLineHeight / 2));
             yardLines.push(
                 playbook.paper.rect(
-                    0, 
-                    yardLineYOffset, 
-                    playbook.options.yardLineWidth, 
+                    0,
+                    yardLineYOffset,
+                    playbook.options.yardLineWidth,
                     playbook.options.yardLineHeight
                 )
                 .attr('fill', '#f0fff0')
                 .attr('stroke-width', 0)
             );
         }
-        
+
         // the individual yard dashes
         for (var i = 0; i < playbook.options.fieldHeight; i = i + 20) {
             yardDashes.push(
                 playbook.paper.rect(
-                    20, 
-                    i, 
-                    playbook.options.yardMarkerWidth, 
+                    20,
+                    i,
+                    playbook.options.yardMarkerWidth,
                     (playbook.options.yardLineHeight / 2)
                 )
                 .attr('fill', '#f0fff0')
                 .attr('stroke-width', 0),
                 playbook.paper.rect(
-                    (playbook.options.fieldWidth - (playbook.options.yardMarkerWidth + 20)), 
-                    i, 
-                    playbook.options.yardMarkerWidth, 
+                    (playbook.options.fieldWidth - (playbook.options.yardMarkerWidth + 20)),
+                    i,
+                    playbook.options.yardMarkerWidth,
                     (playbook.options.yardLineHeight / 2)
                 )
                 .attr('fill', '#f0fff0')
@@ -268,7 +268,7 @@
         }
         yardMarks.push(yardLines);
         yardMarks.push(yardDashes);
-        
+
         // create a Raphael set for the full field
         playbook.field = playbook.paper.set();
         playbook.field.push(
@@ -276,7 +276,7 @@
             yardMarks
         );
     };
-    
+
     /**
      * Builds the player elements.
      *
@@ -301,7 +301,7 @@
             playbook.players.push(PlaybookBuildPlayer(playbook, xpos, ypos, fill, side));
         }
     };
-    
+
     /**
      * Builds a single player element.
      *
@@ -321,14 +321,14 @@
                         .data('side', side)
                         .draggable()
                         ;
-        
+
         // add a route if one was supplied
         if (route) {
             player.data('route', route);
-        }        
+        }
         return player;
     };
-    
+
     /**
      * Builds a single route element.
      *
@@ -345,11 +345,11 @@
             .attr('stroke-width', playbook.options.routeWidth)
             .attr('stroke-opacity', playbook.options.routeOpacity[side] ? playbook.options.routeOpacity[side] : 1);
             ;
-        
+
         if (zone && zone.type == 'rect') {
             route.data('zone', zone);
         }
-        
+
         // remove the route plus any zone it may have
         route.removeAll = function() {
             // if there is a zone, remove it first
@@ -359,13 +359,13 @@
             }
             this.remove();
         };
-        
+
         route.pathdrag();
         route.data('side', side);
-        
+
         return route;
     };
-    
+
     /**
      * Builds a single zone.
      *
@@ -383,10 +383,10 @@
                     .attr('stroke-width', 0)
                     .attr('fill-opacity', playbook.options.routeOpacity[side] ? playbook.options.routeOpacity[side] : 1)
                     ;
-                    
+
         return zone;
     };
-    
+
     /**
      * Extends Raphael elements with a 'draggable' method.
      *
@@ -396,10 +396,10 @@
      */
     function RaphaelElementDrag(Raphael, playbook) {
         Raphael.el.draggable = function() {
-                
+
             var ox, oy, el, xattr, yattr;
             el = this;
-            
+
             // determine the attributes to use
             if (el.type && el.type == 'circle') {
                 xattr = 'cx';
@@ -408,7 +408,7 @@
                 xattr = 'x';
                 yattr = 'y';
             }
-            
+
             // the drag callbacks
             var startCallBack = function(x, y) {
                 // get the original values
@@ -419,7 +419,7 @@
                     el.createRoute(x, y);
                 }
             };
-            
+
             var moveCallBack = function(dx, dy, x, y) {
                 var newx = ox + dx;
                 var newy = oy + dy;
@@ -435,27 +435,27 @@
                     el.pathFirstSegment(newx, newy);
                 }
             };
-            
+
             var endCallBack = function(ev) {
                 if (playbook.mode == 'move') {
                     el.snapToGrid(ev);
                 }
             };
-            
+
             // set the drag event callbacks
             this.drag(
                 moveCallBack,
                 startCallBack,
                 endCallBack
             );
-            
+
             return this;
         };
     };
-    
+
     /**
-     * Extends Raphael elements with a 'snapToGrid' method, which 
-     * wraps Raphael's inbuilt grid snapping ability with logic 
+     * Extends Raphael elements with a 'snapToGrid' method, which
+     * wraps Raphael's inbuilt grid snapping ability with logic
      * around the Playbook grid.
      *
      * @param {Object} Raphael
@@ -490,13 +490,13 @@
             if (route && route.type && route.type == 'path') {
                 route.movePathStart(newx, newy);
             }
-            
+
             return this;
         };
     };
-    
+
     /**
-     * Extends Raphael elements with a 'pathdrag' method, which adds the 
+     * Extends Raphael elements with a 'pathdrag' method, which adds the
      * ability to drag path points.
      *
      * @param {Object} Raphael
@@ -505,16 +505,16 @@
      */
     function RaphaelPathDrag(Raphael, playbook) {
         Raphael.el.pathdrag = function() {
-            
+
             var segmentToMove, side, origx, origy;
-            
+
             // the drag callbacks
             var startCallBack = function(x, y) {
                 origx = x;
                 origy = y;
                 var curPath = this.attr('path');
                 side = this.data('side');
-                
+
                 if (side == 'offense' && playbook.mode == 'design') {
                     // by setting the segment to move to the number of segments, a new one will be created by the drag move callback
                     segmentToMove = curPath.length;
@@ -524,23 +524,23 @@
                     segmentToMove = curPath.length - 1;
                     var bestScore = 10000;
                     for (var i = 1; i < curPath.length; i++) {
-                        if (curPath[i].length == 3) {                        
+                        if (curPath[i].length == 3) {
                             // determine the 'score' of this iteration compared to the x,y of the drag start. The smaller the number the better.
                             var xscore = x - curPath[i][1];;
                             var yscore = y - curPath[i][2];
                             xscore = (xscore < 0) ? xscore * -1 : xscore;
                             yscore = (yscore < 0) ? yscore * -1 : yscore;
                             var score = xscore + yscore;
-                            
+
                             // if the score is less than or equal to the best score, record it and change the segment to move to this iteration
                             if (score <= bestScore) {
                                 bestScore = score;
                                 segmentToMove = i;
-                            }                        
+                            }
                         }
                     }
                 }
-                
+
                 if (side == 'defense' && playbook.mode == 'design') {
                     // kill the current zone rect on drag start
                     var zone = this.data('zone');
@@ -554,7 +554,7 @@
                     this.data('zone', PlaybookBuildZone(playbook, zx, zy, 0, 0, side));
                 }
             };
-            
+
             var moveCallBack = function(dx, dy, x, y) {
                 var curPath = this.attr('path');
                 if (side == 'offense' || playbook.mode == 'move') {
@@ -574,7 +574,7 @@
                         // determine the centre of the zone
                         var cenx = curPath[curPath.length - 1][1];
                         var ceny = curPath[curPath.length - 1][2];
-                        
+
                         zone.attr('height', dy);
                         zone.attr('width', dx);
                         zone.attr('x', cenx - (dx/2));
@@ -582,19 +582,19 @@
                     }
                 }
             };
-            
+
             // set the drag event callbacks
             this.drag(
                 moveCallBack,
                 startCallBack
             );
-            
+
             return this;
         };
     };
-    
+
     /**
-     * Extends Raphael elements with a 'createRoute' method, which starts 
+     * Extends Raphael elements with a 'createRoute' method, which starts
      * the creation of a path element for the purpose of a player route.
      *
      * @param {Object} Raphael
@@ -624,13 +624,13 @@
             var route = PlaybookBuildRoute(playbook, 'M' + curx + ',' + cury, fill, side);
             el.data('route', route);
             playbook.playersToFront();
-            
+
             return this;
         }
     };
-    
+
     /**
-     * Extends Raphael elements with a 'pathFirstSegment' method, which 
+     * Extends Raphael elements with a 'pathFirstSegment' method, which
      * creates an initial segment for a path element.
      *
      * @param {Object} Raphael
@@ -645,13 +645,13 @@
                 newPath.push(['L', x, y]);
                 path.attr('path', newPath);
             }
-            
+
             return this;
         };
     };
-    
+
     /**
-     * Extends Raphael elements with a 'movePathStart' method, which 
+     * Extends Raphael elements with a 'movePathStart' method, which
      * moves the starting point of a path element.
      *
      * @param {Object} Raphael
@@ -668,11 +668,11 @@
                     pathEl.attr('path', newPath);
                 }
             }
-            
+
             return this;
         };
     };
-    
+
     // the exported object
     function playbook(options){
         return new Playbook(options);
@@ -680,4 +680,3 @@
     exports.playbook = playbook;
     return playbook;
 }));
- 
